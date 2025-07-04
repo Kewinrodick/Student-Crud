@@ -4,10 +4,9 @@ import com.example.student.entity.Student;
 import com.example.student.response.StudentResponse;
 import com.example.student.service.StudentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,5 +18,9 @@ public class StudentController {
     @PostMapping
     public StudentResponse create(@RequestBody Student student) {
        return studentService.addStudent(student);
+    }
+    @GetMapping
+    public List<StudentResponse> getAll() {
+        return studentService.findAllStudents();
     }
 }

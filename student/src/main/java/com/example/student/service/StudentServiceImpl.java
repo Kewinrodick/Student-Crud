@@ -32,4 +32,19 @@ public class StudentServiceImpl implements StudentService {
         }
         return response;
     }
+
+    @Override
+    public List<StudentResponse> findAllStudents() {
+        return studentRepository.findAll().stream()
+                .map(student -> {
+                    StudentResponse response = new StudentResponse();
+                    response.setStatus(StudentEnum.SUCCESS);
+                    response.setSuccessMessage("Student found successfully");
+                    response.setCode(200);
+                    response.setData(student);
+
+                    return response;
+                })
+                .toList();
+    }
 }
