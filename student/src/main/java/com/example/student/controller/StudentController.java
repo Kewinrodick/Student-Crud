@@ -4,6 +4,7 @@ import com.example.student.entity.Student;
 import com.example.student.response.StudentResponse;
 import com.example.student.service.StudentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,11 +17,19 @@ public class StudentController {
     private final StudentService studentService;
 
     @PostMapping
-    public StudentResponse create(@RequestBody Student student) {
-       return studentService.addStudent(student);
+    public ResponseEntity<StudentResponse> create(@RequestBody Student student) {
+        StudentResponse response = studentService.addStudent(student);
+       return ResponseEntity.status(response.getCode()).body(response);
     }
     @GetMapping
-    public List<StudentResponse> getAll() {
-        return studentService.findAllStudents();
+    public ResponseEntity<List<StudentResponse>> getAll() {
+        List<StudentResponse> response = studentService.findAllStudents();
+        return ResponseEntity.status(200).body(response);
     }
+    @GetMapping("/{id}")
+    public  ResponseEntity<StudentResponse> getById(@PathVariable String id) {
+        StudentResponse response = studentService.getStudentById(id);
+        return ResponseEntity.status(response.getCode()).body(response);
+    }
+
 }
