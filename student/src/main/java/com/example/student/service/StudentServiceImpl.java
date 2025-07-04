@@ -1,4 +1,35 @@
 package com.example.student.service;
 
-public class StudentServiceImpl {
+import com.example.student.entity.Student;
+import com.example.student.repository.StudentRepository;
+import com.example.student.response.StudentResponse;
+import com.example.student.studentEnum.StudentEnum;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@Transactional
+@RequiredArgsConstructor
+public class StudentServiceImpl implements StudentService {
+
+    private final StudentRepository studentRepository;
+    @Override
+    public StudentResponse addStudent(Student student) {
+        StudentResponse response = new StudentResponse();
+        try {
+            studentRepository.save(student);
+            response.setStatus(StudentEnum.SUCCESS);
+            response.setSuccessMessage("Student added successfully");
+            response.setCode(201);
+            response.setData(student);
+        }catch (Exception e){
+            response.setStatus(StudentEnum.FAILED);
+            response.setErrorMessage(e.getMessage());
+            response.setCode(500);
+        }
+        return response;
+    }
 }
