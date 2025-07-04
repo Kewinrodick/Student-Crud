@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -46,5 +47,22 @@ public class StudentServiceImpl implements StudentService {
                     return response;
                 })
                 .toList();
+    }
+
+    @Override
+    public StudentResponse getStudentById(String id) {
+        StudentResponse response = new StudentResponse();
+        try {
+            Optional<Student> student = studentRepository.findById(id);
+            response.setStatus(StudentEnum.SUCCESS);
+            response.setSuccessMessage("Student found successfully");
+            response.setCode(200);
+            response.setData(student.get());
+        }catch (Exception e){
+            response.setStatus(StudentEnum.FAILED);
+            response.setErrorMessage(e.getMessage());
+            response.setCode(404);
+        }
+        return response;
     }
 }
