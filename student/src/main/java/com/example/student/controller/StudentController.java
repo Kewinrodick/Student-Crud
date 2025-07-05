@@ -31,5 +31,10 @@ public class StudentController {
         StudentResponse response = studentService.getStudentById(id);
         return ResponseEntity.status(response.getCode()).body(response);
     }
+    @PutMapping("/{id}")
+    public ResponseEntity<StudentResponse> update(@PathVariable String id, @RequestBody Student student) {
+        StudentResponse response = studentService.updateStudent(student);
+        return ResponseEntity.status(response.getCode()).body(response);
+    }
 
 }

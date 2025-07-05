@@ -54,10 +54,38 @@ public class StudentServiceImpl implements StudentService {
         StudentResponse response = new StudentResponse();
         try {
             Optional<Student> student = studentRepository.findById(id);
-            response.setStatus(StudentEnum.SUCCESS);
-            response.setSuccessMessage("Student found successfully");
-            response.setCode(200);
-            response.setData(student.get());
+            if(student.isPresent()){
+                response.setStatus(StudentEnum.SUCCESS);
+                response.setSuccessMessage("Student found successfully");
+                response.setCode(200);
+                response.setData(student.get());
+            }else{
+                throw new Exception("Student not found");
+            }
+
+        }catch (Exception e){
+            response.setStatus(StudentEnum.FAILED);
+            response.setErrorMessage(e.getMessage());
+            response.setCode(404);
+        }
+        return response;
+    }
+
+    @Override
+    public StudentResponse updateStudent(Student student) {
+        StudentResponse response = new StudentResponse();
+        try{
+            Optional<Student> stud = studentRepository.findById(student.getId());
+            if(stud.isPresent()){
+                studentRepository.save(student);
+                response.setStatus(StudentEnum.SUCCESS);
+                response.setSuccessMessage("Student updated successfully");
+                response.setCode(200);
+                response.setData(student);
+            }
+            else{
+                throw new Exception("Student not found");
+            }
         }catch (Exception e){
             response.setStatus(StudentEnum.FAILED);
             response.setErrorMessage(e.getMessage());
