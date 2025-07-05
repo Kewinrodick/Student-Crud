@@ -10,4 +10,5 @@ public interface StudentService {
    public List<StudentResponse> findAllStudents();
    public StudentResponse getStudentById(String id);
    public StudentResponse updateStudent(Student student);
+   public StudentResponse deleteStudent(String id);
 }
