@@ -115,5 +115,21 @@ public class StudentServiceImpl implements StudentService {
         return response;
     }
 
+    @Override
+    public StudentResponse deleteAllStudents() {
+        StudentResponse response = new StudentResponse();
+        try{
+            studentRepository.deleteAll();
+            response.setStatus(StudentEnum.SUCCESS);
+            response.setSuccessMessage("All students deleted successfully");
+            response.setCode(204);
+        }catch (Exception e){
+            response.setStatus(StudentEnum.FAILED);
+            response.setErrorMessage(e.getMessage());
+            response.setCode(500);
+        }
+        return response;
+    }
+
 
 }

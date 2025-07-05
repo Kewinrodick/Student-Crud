@@ -41,5 +41,10 @@ public class StudentController {
         StudentResponse  response = studentService.deleteStudent(id);
         return ResponseEntity.status(response.getCode()).build();
     }
+    @DeleteMapping
+    public ResponseEntity<Void> deleteAll() {
+        StudentResponse response = studentService.deleteAllStudents();
+        return ResponseEntity.status(response.getCode()).build();
+    }
 
 }

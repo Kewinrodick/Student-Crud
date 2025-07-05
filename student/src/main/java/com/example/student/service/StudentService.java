@@ -11,4 +11,5 @@ public interface StudentService {
    public StudentResponse getStudentById(String id);
    public StudentResponse updateStudent(Student student);
    public StudentResponse deleteStudent(String id);
+   public StudentResponse deleteAllStudents();
 }
