@@ -93,4 +93,27 @@ public class StudentServiceImpl implements StudentService {
         }
         return response;
     }
+
+    @Override
+    public StudentResponse deleteStudent(String id) {
+        StudentResponse response = new StudentResponse();
+        try{
+            if(studentRepository.findById(id).isPresent()){
+                studentRepository.deleteById(id);
+                response.setStatus(StudentEnum.SUCCESS);
+                response.setSuccessMessage("Student deleted successfully");
+                response.setCode(204);
+            }
+            else{
+                throw new Exception("Student not found");
+            }
+        }catch (Exception e){
+            response.setStatus(StudentEnum.FAILED);
+            response.setErrorMessage(e.getMessage());
+            response.setCode(404);
+        }
+        return response;
+    }
+
+
 }
