@@ -1,5 +1,6 @@
 package com.example.student.controller;
 
+import com.example.student.dtos.StudentRequestDto;
 import com.example.student.entity.Student;
 import com.example.student.response.StudentResponse;
 import com.example.student.service.StudentService;
@@ -32,9 +33,19 @@ public class StudentController {
         return ResponseEntity.status(response.getCode()).body(response);
     }
     @PutMapping("/{id}")
-    public ResponseEntity<StudentResponse> update(@PathVariable String id, @RequestBody Student student) {
-        StudentResponse response = studentService.updateStudent(student);
+    public ResponseEntity<StudentResponse> update(@PathVariable String id, @RequestBody StudentRequestDto requestDto) {
+        StudentResponse response = studentService.updateStudent(id,requestDto);
         return ResponseEntity.status(response.getCode()).body(response);
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable String id) {
+        StudentResponse  response = studentService.deleteStudent(id);
+        return ResponseEntity.status(response.getCode()).build();
+    }
+    @DeleteMapping
+    public ResponseEntity<Void> deleteAll() {
+        StudentResponse response = studentService.deleteAllStudents();
+        return ResponseEntity.status(response.getCode()).build();
     }
 
 }

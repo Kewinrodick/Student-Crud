@@ -1,6 +1,8 @@
 package com.example.student.service;
 
+import com.example.student.dtos.StudentRequestDto;
 import com.example.student.entity.Student;
+import com.example.student.mapper.StudentMapper;
 import com.example.student.repository.StudentRepository;
 import com.example.student.response.StudentResponse;
 import com.example.student.studentEnum.StudentEnum;
@@ -16,6 +18,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class StudentServiceImpl implements StudentService {
 
+    private final StudentMapper studentMapper;
     private final StudentRepository studentRepository;
     @Override
     public StudentResponse addStudent(Student student) {
@@ -72,11 +75,12 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentResponse updateStudent(Student student) {
+    public StudentResponse updateStudent(String id, StudentRequestDto requestDto) {
         StudentResponse response = new StudentResponse();
         try{
-            Optional<Student> stud = studentRepository.findById(student.getId());
-            if(stud.isPresent()){
+            Student student = studentRepository.findById(id).orElse(null);
+            if(student!=null){
+                studentMapper.update(student,requestDto);
                 studentRepository.save(student);
                 response.setStatus(StudentEnum.SUCCESS);
                 response.setSuccessMessage("Student updated successfully");
@@ -93,4 +97,41 @@ public class StudentServiceImpl implements StudentService {
         }
         return response;
     }
+    @Override
+    public StudentResponse deleteStudent(String id) {
+        StudentResponse response = new StudentResponse();
+        try{
+            if(studentRepository.findById(id).isPresent()){
+                studentRepository.deleteById(id);
+                response.setStatus(StudentEnum.SUCCESS);
+                response.setSuccessMessage("Student deleted successfully");
+                response.setCode(204);
+            }
+            else{
+                throw new Exception("Student not found");
+            }
+        }catch (Exception e){
+            response.setStatus(StudentEnum.FAILED);
+            response.setErrorMessage(e.getMessage());
+            response.setCode(404);
+        }
+        return response;
+    }
+    @Override
+    public StudentResponse deleteAllStudents() {
+        StudentResponse response = new StudentResponse();
+        try{
+            studentRepository.deleteAll();
+            response.setStatus(StudentEnum.SUCCESS);
+            response.setSuccessMessage("All students deleted successfully");
+            response.setCode(204);
+        }catch (Exception e){
+            response.setStatus(StudentEnum.FAILED);
+            response.setErrorMessage(e.getMessage());
+            response.setCode(500);
+        }
+        return response;
+    }
+
 }
+
