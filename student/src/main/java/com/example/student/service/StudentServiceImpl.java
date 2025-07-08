@@ -3,7 +3,7 @@ package com.example.student.service;
 import com.example.student.dtos.StudentRequestDto;
 import com.example.student.entity.Student;
 import com.example.student.repository.StudentRepository;
-import com.example.student.response.StudentResponse;
+import com.example.student.response.CommonResponse;
 import com.example.student.studentEnum.StudentEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,8 +19,8 @@ public class StudentServiceImpl implements StudentService {
 
 
     @Override
-    public StudentResponse addStudent(Student student) {
-        StudentResponse response = new StudentResponse();
+    public CommonResponse addStudent(Student student) {
+        CommonResponse response = new CommonResponse();
         try {
             studentRepository.save(student);
             response.setStatus(StudentEnum.SUCCESS);
@@ -36,10 +36,10 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public List<StudentResponse> findAllStudents() {
+    public List<CommonResponse> findAllStudents() {
         return studentRepository.findAll().stream()
                 .map(student -> {
-                    StudentResponse response = new StudentResponse();
+                    CommonResponse response = new CommonResponse();
                     response.setStatus(StudentEnum.SUCCESS);
                     response.setSuccessMessage("Student found successfully");
                     response.setCode(200);
@@ -51,8 +51,8 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentResponse getStudentById(String id) {
-        StudentResponse response = new StudentResponse();
+    public CommonResponse getStudentById(String id) {
+        CommonResponse response = new CommonResponse();
         try {
             Optional<Student> student = studentRepository.findById(id);
             if(student.isPresent()){
@@ -73,8 +73,8 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentResponse updateStudent(String id,StudentRequestDto studentRequestDto) {
-        StudentResponse response = new StudentResponse();
+    public CommonResponse updateStudent(String id, StudentRequestDto studentRequestDto) {
+        CommonResponse response = new CommonResponse();
         try{
             Student student = studentRepository.findById(id).orElse(null);
             if(student != null){
@@ -100,8 +100,8 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentResponse deleteStudent(String id) {
-        StudentResponse response = new StudentResponse();
+    public CommonResponse deleteStudent(String id) {
+        CommonResponse response = new CommonResponse();
         try{
             if(studentRepository.findById(id).isPresent()){
                 studentRepository.deleteById(id);
@@ -121,8 +121,8 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentResponse deleteAllStudents() {
-        StudentResponse response = new StudentResponse();
+    public CommonResponse deleteAllStudents() {
+        CommonResponse response = new CommonResponse();
         try{
             studentRepository.deleteAll();
             response.setStatus(StudentEnum.SUCCESS);
