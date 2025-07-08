@@ -1,22 +1,23 @@
 package com.example.student.service;
 
+import com.example.student.dtos.StudentRequestDto;
 import com.example.student.entity.Student;
 import com.example.student.repository.StudentRepository;
 import com.example.student.response.StudentResponse;
 import com.example.student.studentEnum.StudentEnum;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@Transactional
-@RequiredArgsConstructor
 public class StudentServiceImpl implements StudentService {
 
-    private final StudentRepository studentRepository;
+    @Autowired
+    private StudentRepository studentRepository;
+
+
     @Override
     public StudentResponse addStudent(Student student) {
         StudentResponse response = new StudentResponse();
@@ -58,7 +59,7 @@ public class StudentServiceImpl implements StudentService {
                 response.setStatus(StudentEnum.SUCCESS);
                 response.setSuccessMessage("Student found successfully");
                 response.setCode(200);
-                response.setData(student.get());
+                response.setData(student);
             }else{
                 throw new Exception("Student not found");
             }
@@ -72,11 +73,15 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentResponse updateStudent(Student student) {
+    public StudentResponse updateStudent(String id,StudentRequestDto studentRequestDto) {
         StudentResponse response = new StudentResponse();
         try{
-            Optional<Student> stud = studentRepository.findById(student.getId());
-            if(stud.isPresent()){
+            Student student = studentRepository.findById(id).orElse(null);
+            if(student != null){
+                student.setName(studentRequestDto.getName());
+                student.setCourse(studentRequestDto.getCourse());
+                student.setEmail(studentRequestDto.getEmail());
+                student.setCurrentYear(studentRequestDto.getCurrentYear());
                 studentRepository.save(student);
                 response.setStatus(StudentEnum.SUCCESS);
                 response.setSuccessMessage("Student updated successfully");
