@@ -1,24 +1,21 @@
-package com.example.student.entity;
+package com.example.student.dtos;
 
-
+import com.example.student.studentEnum.Roles;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@Document
-public class Student {
-    @Id
-    private String id;
+@AllArgsConstructor
+public class AuthRequest {
     private String name;
     @Indexed(unique = true)
     private String email;
-    private String course;
-    private int currentYear;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String password;
+    private Roles role;
 }
