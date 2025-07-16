@@ -2,10 +2,14 @@ package com.example.student.service;
 
 import com.example.student.dtos.StudentRequestDto;
 import com.example.student.entity.Student;
+import com.example.student.entity.User;
 import com.example.student.repository.StudentRepository;
-import com.example.student.response.StudentResponse;
-import com.example.student.studentEnum.StudentEnum;
+import com.example.student.repository.UserRepository;
+import com.example.student.response.CommonResponse;
+import com.example.student.studentEnum.ResponseStatus;
+import com.example.student.studentEnum.Roles;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,19 +20,22 @@ public class StudentServiceImpl implements StudentService {
 
     @Autowired
     private StudentRepository studentRepository;
+    @Autowired
+    private UserRepository userRepository;
 
 
     @Override
-    public StudentResponse addStudent(Student student) {
-        StudentResponse response = new StudentResponse();
+    public CommonResponse addStudent(Student student) {
+        CommonResponse response = new CommonResponse();
         try {
+            User user = new User();
             studentRepository.save(student);
-            response.setStatus(StudentEnum.SUCCESS);
+            response.setStatus(ResponseStatus.SUCCESS);
             response.setSuccessMessage("Student added successfully");
             response.setCode(201);
             response.setData(student);
         }catch (Exception e){
-            response.setStatus(StudentEnum.FAILED);
+            response.setStatus(ResponseStatus.FAILED);
             response.setErrorMessage(e.getMessage());
             response.setCode(500);
         }
@@ -36,11 +43,11 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public List<StudentResponse> findAllStudents() {
+    public List<CommonResponse> findAllStudents() {
         return studentRepository.findAll().stream()
                 .map(student -> {
-                    StudentResponse response = new StudentResponse();
-                    response.setStatus(StudentEnum.SUCCESS);
+                    CommonResponse response = new CommonResponse();
+                    response.setStatus(ResponseStatus.SUCCESS);
                     response.setSuccessMessage("Student found successfully");
                     response.setCode(200);
                     response.setData(student);
@@ -51,21 +58,32 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentResponse getStudentById(String id) {
-        StudentResponse response = new StudentResponse();
+    public CommonResponse getStudentById(String id) {
+        CommonResponse response = new CommonResponse();
         try {
+
             Optional<Student> student = studentRepository.findById(id);
-            if(student.isPresent()){
-                response.setStatus(StudentEnum.SUCCESS);
-                response.setSuccessMessage("Student found successfully");
-                response.setCode(200);
-                response.setData(student);
-            }else{
+            if(student.isPresent()) {
+                //If Student - he must be able to see his own detaild not others (as two users will not have same name)
+                String name = SecurityContextHolder.getContext().getAuthentication().getName();
+                Optional<User> user = userRepository.findByName(name);
+                if (user.get().getRole().equals(Roles.STUDENT)) {
+                    if (!user.get().getName().equals(student.get().getName())) {
+                        throw new Exception("Unauthorized user");
+                    } else {
+                        response.setStatus(ResponseStatus.SUCCESS);
+                        response.setSuccessMessage("Student found successfully");
+                        response.setCode(200);
+                        response.setData(student);
+                    }
+                }
+            }
+            else{
                 throw new Exception("Student not found");
             }
 
         }catch (Exception e){
-            response.setStatus(StudentEnum.FAILED);
+            response.setStatus(ResponseStatus.FAILED);
             response.setErrorMessage(e.getMessage());
             response.setCode(404);
         }
@@ -73,8 +91,8 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentResponse updateStudent(String id,StudentRequestDto studentRequestDto) {
-        StudentResponse response = new StudentResponse();
+    public CommonResponse updateStudent(String id, StudentRequestDto studentRequestDto) {
+        CommonResponse response = new CommonResponse();
         try{
             Student student = studentRepository.findById(id).orElse(null);
             if(student != null){
@@ -83,7 +101,7 @@ public class StudentServiceImpl implements StudentService {
                 student.setEmail(studentRequestDto.getEmail());
                 student.setCurrentYear(studentRequestDto.getCurrentYear());
                 studentRepository.save(student);
-                response.setStatus(StudentEnum.SUCCESS);
+                response.setStatus(ResponseStatus.SUCCESS);
                 response.setSuccessMessage("Student updated successfully");
                 response.setCode(200);
                 response.setData(student);
@@ -92,7 +110,7 @@ public class StudentServiceImpl implements StudentService {
                 throw new Exception("Student not found");
             }
         }catch (Exception e){
-            response.setStatus(StudentEnum.FAILED);
+            response.setStatus(ResponseStatus.FAILED);
             response.setErrorMessage(e.getMessage());
             response.setCode(404);
         }
@@ -100,12 +118,12 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentResponse deleteStudent(String id) {
-        StudentResponse response = new StudentResponse();
+    public CommonResponse deleteStudent(String id) {
+        CommonResponse response = new CommonResponse();
         try{
             if(studentRepository.findById(id).isPresent()){
                 studentRepository.deleteById(id);
-                response.setStatus(StudentEnum.SUCCESS);
+                response.setStatus(ResponseStatus.SUCCESS);
                 response.setSuccessMessage("Student deleted successfully");
                 response.setCode(204);
             }
@@ -113,7 +131,7 @@ public class StudentServiceImpl implements StudentService {
                 throw new Exception("Student not found");
             }
         }catch (Exception e){
-            response.setStatus(StudentEnum.FAILED);
+            response.setStatus(ResponseStatus.FAILED);
             response.setErrorMessage(e.getMessage());
             response.setCode(404);
         }
@@ -121,20 +139,19 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentResponse deleteAllStudents() {
-        StudentResponse response = new StudentResponse();
+    public CommonResponse deleteAllStudents() {
+        CommonResponse response = new CommonResponse();
         try{
             studentRepository.deleteAll();
-            response.setStatus(StudentEnum.SUCCESS);
+            response.setStatus(ResponseStatus.SUCCESS);
             response.setSuccessMessage("All students deleted successfully");
             response.setCode(204);
         }catch (Exception e){
-            response.setStatus(StudentEnum.FAILED);
+            response.setStatus(ResponseStatus.FAILED);
             response.setErrorMessage(e.getMessage());
             response.setCode(500);
         }
         return response;
     }
-
 
 }

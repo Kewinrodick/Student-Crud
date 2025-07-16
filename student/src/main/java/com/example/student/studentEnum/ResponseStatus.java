@@ -1,6 +1,6 @@
 package com.example.student.studentEnum;
 
-public enum StudentEnum {
+public enum ResponseStatus {
     SUCCESS,
     FAILED,
     UNAUTHORIZED
