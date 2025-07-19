@@ -9,6 +9,9 @@ import com.example.student.response.CommonResponse;
 import com.example.student.studentEnum.ResponseStatus;
 import com.example.student.studentEnum.Roles;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -61,11 +64,10 @@ public class StudentServiceImpl implements StudentService {
     public CommonResponse getStudentById(String id) {
         CommonResponse response = new CommonResponse();
         try {
-
             Optional<Student> student = studentRepository.findById(id);
             if(student.isPresent()) {
                 //If Student - he must be able to see his own detaild not others (as two users will not have same name)
-                String name = SecurityContextHolder.getContext().getAuthentication().getName();
+                /*String name = SecurityContextHolder.getContext().getAuthentication().getName();
                 Optional<User> user = userRepository.findByName(name);
                 if (user.get().getRole().equals(Roles.STUDENT)) {
                     if (!user.get().getName().equals(student.get().getName())) {
@@ -76,7 +78,11 @@ public class StudentServiceImpl implements StudentService {
                         response.setCode(200);
                         response.setData(student);
                     }
-                }
+                }*/
+                response.setStatus(ResponseStatus.SUCCESS);
+                response.setSuccessMessage("Student found successfully");
+                response.setCode(200);
+                response.setData(student.get());
             }
             else{
                 throw new Exception("Student not found");

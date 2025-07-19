@@ -39,8 +39,8 @@ public class JwtFilter extends OncePerRequestFilter {
                 String token = header.substring(7);
                 try{
                     if(jwtUtils.validateJwtToken(token)){
-                            String userName = jwtUtils.getUsernameFromJwtToken(token);
-                        UserDetails userDetails = userDetailService.loadUserByUsername(userName);
+                            String name = jwtUtils.getUsernameFromJwtToken(token);
+                        UserDetails userDetails = userDetailService.loadUserByUsername(name);
                         UsernamePasswordAuthenticationToken authentication =
                                 new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -58,8 +58,9 @@ public class JwtFilter extends OncePerRequestFilter {
                 }
             }
             else{
-
                 System.out.println("Authorization header not found");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
             }
         filterChain.doFilter(request, response);
 
