@@ -7,6 +7,7 @@ import com.example.student.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,6 +37,7 @@ public class StudentController {
     @GetMapping("/{id}")
     public  ResponseEntity<CommonResponse> getById(@PathVariable String id) {
         CommonResponse response = studentService.getStudentById(id);
+        System.out.println(SecurityContextHolder.getContext().getAuthentication());
         return ResponseEntity.status(response.getCode()).body(response);
     }
 

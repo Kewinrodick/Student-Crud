@@ -1,6 +1,7 @@
 package com.example.student.controller;
 
 import com.example.student.dtos.AuthRequest;
+import com.example.student.dtos.LoginRequest;
 import com.example.student.response.CommonResponse;
 import com.example.student.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +25,9 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<CommonResponse> login(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<CommonResponse> login(@RequestBody LoginRequest loginRequest) {
             System.out.println("in /login");
-           CommonResponse response = userService.loginUser(authRequest);
+           CommonResponse response = userService.loginUser(loginRequest);
            return ResponseEntity.status(response.getCode()).body(response);
     }
 
